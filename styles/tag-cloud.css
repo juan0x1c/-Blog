@@ -1,0 +1,23 @@
+/* Tag Cloud */
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.tag-cloud .tag {
+    cursor: pointer;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-card);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    transition: transform 0.2s, background 0.2s;
+}
+.tag-cloud .tag:hover {
+    transform: scale(1.07);
+}
+.tag-cloud .tag.active {
+    background: var(--accent-primary);
+    color: #000;
+}

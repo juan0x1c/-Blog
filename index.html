@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal Cybersecurity Portfolio & Knowledge Base. Tips, Tricks, and CTF write-ups.">
+    <meta name="keywords" content="Cybersecurity, CTF, OSC, InfoSec, Pwn, Web Exploitation, Reverse Engineering">
+    <meta name="author" content="Anon">
+    <meta property="og:title" content="CyberSec | Personal Space">
+    <meta property="og:description" content="Cybersecurity Portfolio & Knowledge Base">
+    <title>CyberSec | Personal Space</title>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/tag-cloud.css">
+<body class="dark-theme">
+    <!-- Cinematic Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="fingerprint-btn" id="start-auth-btn">
+                <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            <h2 id="splash-status" class="glitch" data-text="SYSTEM LOCKED">SYSTEM LOCKED</h2>
+            <div class="splash-progress">
+                <div class="splash-bar" id="splash-bar"></div>
+            </div>
+            <p id="splash-log">Awaiting biometric auth...</p>
+        </div>
+    </div>
+
+    <!-- Background glitch effect layer -->
+    <div class="bg-scanlines"></div>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <span class="glitch" data-text="<CYBER/>"> <CYBER/> </span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-btn active" data-target="home"><i class="fa-solid fa-terminal"></i> root@home:~#</a></li>
+                    <li><a href="#competitions" class="nav-btn" data-target="competitions"><i class="fa-solid fa-trophy"></i> comp</a></li>
+                    <li><a href="#blog" class="nav-btn" data-target="blog"><i class="fa-solid fa-book-journal-whills"></i> blog</a></li>
+                    <li><a href="#writeups" class="nav-btn" data-target="writeups"><i class="fa-solid fa-flag"></i> write-ups</a></li>
+                    <li><a href="#tips" class="nav-btn" data-target="tips"><i class="fa-solid fa-lightbulb"></i> tips</a></li>
+                </ul>
+                <div class="mobile-menu">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <!-- Sections will be injected / toggled here via JS -->
+        
+        <!-- HOME SECTION -->
+        <section id="home" class="view-section active-section" style="position: relative;">
+            <!-- World Map Attack Simulator -->
+            <div id="attack-map-container">
+                <svg id="world-map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice"></svg>
+            </div>
+
+            <div class="hero" style="position: relative; z-index: 2;">
+                <p class="sys-msg">[SYS] Connection established...</p>
+                <h1 class="typewriter-h1">Salut, sunt <span class="highlight">Juan0x1f</span></h1>
+                <h2 class="subtitle">Elev & Pasionat de Securitate Cibernetică</h2>
+                
+                <div class="about-card terminal-card">
+                    <div class="terminal-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="title">whoami</span>
+                    </div>
+                    <div class="terminal-body" id="whoami-content">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="phishing-detector-card terminal-card" style="margin-top: 2rem; max-width: 800px;">
+                    <div class="terminal-header" style="border-bottom: 1px solid #eab308; background: rgba(234, 179, 8, 0.05);">
+                        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                        <span class="title">Phish_Analyzer.exe</span>
+                    </div>
+                    <div class="terminal-body" style="padding: 2rem; overflow: visible; line-height: 1.5;">
+                        <p style="color: var(--text-dim); margin-bottom: 1rem; font-family: var(--font-mono);">[+] Enter suspicious email content or address below to analyze...</p>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <input type="text" id="phish-input" placeholder="e.g. support@paypaldeliver.com" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.75rem 1rem; border-radius: 4px; font-family: var(--font-mono); outline: none;">
+                            <button id="phish-scan-btn" class="filter-btn active" style="border-color: #eab308; background: #eab308; color: #000; font-weight: bold; cursor: pointer;">SCAN</button>
+                        </div>
+                        <div id="phish-output" style="font-family: var(--font-mono); font-size: 0.9rem; min-height: 40px; color: var(--accent-primary);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPETITIONS SECTION -->
+        <section id="competitions" class="view-section hidden">
+            <h2 class="section-title">0x01 <span class="highlight">Competiții</span></h2>
+            <p class="section-desc">Experiența mea în competiții de securitate cibernetică și CTF-uri.</p>
+            <div class="timeline" id="competitions-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- BLOG SECTION -->
+        <section id="blog" class="view-section hidden">
+    <div id="tag-cloud" class="tag-cloud"></div>
+            <h2 class="section-title">0x02 <span class="highlight">Blog</span></h2>
+            <p class="section-desc">Articole, write-up-uri și gânduri despre securitate.</p>
+            <div class="blog-grid" id="blog-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- INDIVIDUAL BLOG DETAIL SECTION -->
+        <section id="blog-detail" class="view-section hidden">
+            <button class="back-btn" id="back-to-blog"><i class="fa-solid fa-arrow-left"></i> Înapoi la Blog</button>
+            <article class="blog-detail-container" id="blog-content-container">
+                <!-- Filled by JS -->
+            </article>
+        </section>
+
+        <!-- WRITE-UPS SECTION -->
+        <section id="writeups" class="view-section hidden">
+            <h2 class="section-title">0x04 <span class="highlight">Write-Ups</span></h2>
+            <p class="section-desc">Rezolvări explicitar pentru provocări de tip CTF.</p>
+            <div class="category-filters" id="writeups-categories">
+                <!-- Filled by JS -->
+            </div>
+            <div class="blog-grid" id="writeups-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- INDIVIDUAL WRITEUP DETAIL SECTION -->
+        <section id="writeup-detail" class="view-section hidden">
+            <button class="back-btn" id="back-to-writeups"><i class="fa-solid fa-arrow-left"></i> Înapoi la Write-Ups</button>
+            <article class="blog-detail-container" id="writeup-content-container">
+                <!-- Filled by JS -->
+            </article>
+        </section>
+
+        <!-- TIPS & TRICKS SECTION -->
+        <section id="tips" class="view-section hidden">
+            <h2 class="section-title">0x03 <span class="highlight">Tips & Tricks</span></h2>
+            <p class="section-desc">Resurse și sfaturi organizate pe categorii.</p>
+            <div class="category-filters" id="tips-categories">
+                <!-- Filled by JS -->
+            </div>
+            <div id="tips-subcategories" class="subcategories-container hidden">
+                <!-- Filled by JS -->
+            </div>
+            <div class="tips-grid" id="tips-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- INDIVIDUAL TIP DETAIL SECTION -->
+        <section id="tip-detail" class="view-section hidden">
+            <button class="back-btn" id="back-to-tips"><i class="fa-solid fa-arrow-left"></i> Înapoi la Tips</button>
+            <div class="tip-detail-container" id="tip-content-container">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+        
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; <span id="year"></span> CyberSec Portfolio. All rights reserved.</p>
+            <div class="footer-social">
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+                <a href="https://discord.com/users/juann0123" target="_blank"><i class="fa-brands fa-discord"></i></a>
+                <a href="#"><i class="fa-brands fa-hackerrank"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
