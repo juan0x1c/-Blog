@@ -897,7 +897,7 @@ ${formattedContent}\\\`
         });
     }
 }
-
+ 
 // 6. Delete Admin Logic
 window.deleteWriteup = function(event, id) {
     if(event) { event.preventDefault(); event.stopPropagation(); }
