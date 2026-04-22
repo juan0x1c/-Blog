@@ -129,6 +129,7 @@ function renderWhoami() {
 
     const input = document.getElementById('terminal-input');
     const history = document.getElementById('terminal-history');
+    let suPending = false;
 
     // Keep focus on input when clicking terminal body
     const body = document.querySelector('.terminal-body');
@@ -138,11 +139,63 @@ function renderWhoami() {
         });
     }
 
-    input.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', async function(e) {
         if (e.key === 'Enter') {
             const cmd = this.value.trim();
             this.value = '';
             
+            if (suPending) {
+                const cmdHistoryLine = document.createElement('div');
+                cmdHistoryLine.innerHTML = `<span class="prompt">Password:</span> <span style="color: var(--text-main); font-family: var(--font-mono);">${'*'.repeat(cmd.length)}</span>`;
+                cmdHistoryLine.style.marginBottom = '0.5rem';
+                history.appendChild(cmdHistoryLine);
+
+                const msgBuffer = new TextEncoder().encode(cmd);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                if (hashHex === '34a07356d10f2b44f82a19b06cf2ff91ebfbd91d445fa89fc0bb9a052fc18891') {
+                    window.isTerminalAdmin = true;
+                    if(typeof renderWriteups === 'function') renderWriteups();
+                    const genModal = document.getElementById('secret-generator-modal');
+                    if(genModal) genModal.style.display = 'flex';
+                    
+                    const outputLine = document.createElement('div');
+                    outputLine.style.marginBottom = '1.5rem';
+                    outputLine.style.color = 'var(--accent-green)';
+                    outputLine.innerHTML = `[+] Access granted. Initializing classified generator protocol... <br> [+] Admin mode features unlocked.`;
+                    history.appendChild(outputLine);
+                } else {
+                    const outputLine = document.createElement('div');
+                    outputLine.style.marginBottom = '1.5rem';
+                    outputLine.style.color = '#ef4444';
+                    outputLine.innerHTML = `su: Authentication failure`;
+                    history.appendChild(outputLine);
+                }
+
+                input.type = 'text';
+                suPending = false;
+                const activePrompt = document.querySelector('#terminal-input-line .prompt');
+                if(activePrompt) activePrompt.innerText = 'guest@cybersec:~$';
+                if(body) body.scrollTop = body.scrollHeight;
+                return;
+            }
+
+            if (cmd === 'su' || cmd === 'sudo su') {
+                const cmdHistoryLine = document.createElement('div');
+                cmdHistoryLine.innerHTML = `<span class="prompt">guest@cybersec:~$</span> <span style="color: var(--text-main); font-family: var(--font-mono);">${escapeHTML(cmd)}</span>`;
+                cmdHistoryLine.style.marginBottom = '0.5rem';
+                history.appendChild(cmdHistoryLine);
+                
+                suPending = true;
+                input.type = 'password';
+                const activePrompt = document.querySelector('#terminal-input-line .prompt');
+                if(activePrompt) activePrompt.innerText = 'Password:';
+                if(body) body.scrollTop = body.scrollHeight;
+                return;
+            }
+
             // Add typed command to history
             const cmdHistoryLine = document.createElement('div');
             cmdHistoryLine.innerHTML = `<span class="prompt">guest@cybersec:~$</span> <span style="color: var(--text-main); font-family: var(--font-mono);">${escapeHTML(cmd)}</span>`;
@@ -223,12 +276,7 @@ function executeTerminalCommand(cmd) {
         case 'secrets:))':
         case 'secrets:)))':
             return `<span style="color: #f43f5e; font-style: italic;">Ah! Ai găsit secretul! (Sau nu... ?) :)))<br>Hack the planet! 📡</span>`;
-        case 'diduhearthat?':
-            window.isTerminalAdmin = true;
-            if(typeof renderWriteups === 'function') renderWriteups();
-            const genModal = document.getElementById('secret-generator-modal');
-            if(genModal) genModal.style.display = 'flex';
-            return `<span style="color: var(--accent-green); font-style: italic;">[+] Access granted. Initializing classified generator protocol... <br> [+] Admin mode features unlocked (Delete Buttons appear on UI).</span>`;
+
         case 'help':
             return `
                 <span style="color: var(--accent-secondary); font-weight: bold;">Comenzi disponibile:</span><br>
