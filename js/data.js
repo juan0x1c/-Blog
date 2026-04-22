@@ -332,8 +332,44 @@ public boolean checkPassword(String password) {
                 picoCTF{w4rm1ng_Up_w1tH_jAv4_0009yrGMeEp}
             </div>
             `
-        }
+        },
+        {
+            id: 6,
+            title: "Write-up: Hash to Flag (Forensics Challenge)",
+            date: "Recent",
+            tag: "Forensics",
+            category: "Forensics",
+            snippet: "Provocarea a implicat decodarea unui hash Base64 lung într-o imagine PNG ce conținea codul ASCII pentru flag.",
+            content: `
+            <p style="font-size: 1.25rem; font-weight: 500; color: var(--accent-primary); margin-bottom: 2rem;">📋 Rezumat</p>
+            <p>Challenge-ul de forensics a implicat un hash foarte lung care, după decodare, a rezultat într-o imagine. Pe imagine era un cod ASCII care, după decodare, a dezvăluit flag-ul.</p>
 
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.5rem;">🔍 Pasul 1: Identificarea hash-ului</h3>
+            <p>Am primit un șir foarte lung de caractere aparent aleatoare. Acesta părea a fi codat în Base64 datorită caracterelor alfanumerice și a padding-ului cu <code>=</code> la final.</p>
+            <p>Exemplu de cum arăta:</p>
+            <pre style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); color: var(--text-dim); margin: 1.5rem 0; overflow-x: auto;">iVBORw0KGgoAAAANSUhEUgAA... (foarte lung) ...5ErkJggg==</pre>
+
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.5rem;">🚀 Pasul 2: Decodarea Base64 → Imagine</h3>
+            <p>Am folosit scriptul Python pentru a decoda Base64-ul și a salva rezultatul:</p>
+            <pre style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); color: var(--accent-green); margin: 1.5rem 0; overflow-x: auto;">
+import base64
+
+with open('hash.txt', 'r') as f:
+    b64_data = f.read().strip()
+
+decoded = base64.b64decode(b64_data)
+
+with open('output.bin', 'wb') as f:
+    f.write(decoded)</pre>
+
+            <p>După rulare, am inspectat fișierul:</p>
+            <pre style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); color: var(--text-dim); margin: 1.5rem 0; overflow-x: auto;">file output.bin
+# output.bin: PNG image data, 800 x 600, 8-bit/color RGBA</pre>
+
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.5rem;">🎯 Pasul 3: Extragerea Flag-ului</h3>
+            <p>Din imagine am găsit un cod ASCII scris chiar pe imagine. L-am decodat folosind <strong>DCODE</strong> iar apoi mi-a dat flagul.</p>
+            `
+        }
     ],
     tipsTricks: [
         {
@@ -524,6 +560,27 @@ RSA:
 factordb.com
 Wiener attack
 Hastad attack`,
+        },
+        {
+            id: 71,
+            title: "Base64 Decoding Script",
+            category: "Crypto",
+            description: "Script Python pentru decodarea rapidă a fișierelor Base64 în binar (util pentru CTF).",
+            content: `Base64 to File Decoder:
+import base64
+
+# Citire date Base64 din fisier
+with open('hash.txt', 'r') as f:
+    b64_data = f.read().strip()
+
+# Decodare in binar
+decoded = base64.b64decode(b64_data)
+
+# Salvare ca fisier binar (ex: imagine, exe, shellcode)
+with open('output.bin', 'wb') as f:
+    f.write(decoded)
+
+[+] Sfat: Foloseste 'file output.bin' dupa decodare pentru a identifica formatul real al fisierului.`
         }
     ],
     categories: ["Toate", "Web", "PCAP", "Pwn", "Stego", "Forensics", "Crypto"]
