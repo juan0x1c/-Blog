@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCinematicSplash();
     initPhishingDetector();
     initAttackMap();
+    initSecretGenerator();
 });
 
 // Render Home/Whoami
@@ -222,6 +223,12 @@ function executeTerminalCommand(cmd) {
         case 'secrets:))':
         case 'secrets:)))':
             return `<span style="color: #f43f5e; font-style: italic;">Ah! Ai găsit secretul! (Sau nu... ?) :)))<br>Hack the planet! 📡</span>`;
+        case 'diduhearthat?':
+            window.isTerminalAdmin = true;
+            if(typeof renderWriteups === 'function') renderWriteups();
+            const genModal = document.getElementById('secret-generator-modal');
+            if(genModal) genModal.style.display = 'flex';
+            return `<span style="color: var(--accent-green); font-style: italic;">[+] Access granted. Initializing classified generator protocol... <br> [+] Admin mode features unlocked (Delete Buttons appear on UI).</span>`;
         case 'help':
             return `
                 <span style="color: var(--accent-secondary); font-weight: bold;">Comenzi disponibile:</span><br>
@@ -356,8 +363,14 @@ function renderWriteups(filterCat = "Toate") {
     
     let html = '';
     filtered.forEach(post => {
+        let deleteBtn = '';
+        if (window.isTerminalAdmin) {
+            deleteBtn = `<button onclick="deleteWriteup(event, ${post.id})" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #ef4444; font-size: 1.2rem; cursor: pointer; z-index: 10;" title="Șterge din memorie"><i class="fa-solid fa-trash"></i></button>`;
+        }
+        
         html += `
-            <div class="card" style="border-left: 2px solid var(--accent-primary)">
+            <div class="card" style="border-left: 2px solid var(--accent-primary); position: relative;">
+                ${deleteBtn}
                 <span class="card-tag" style="background: var(--accent-dim); color: var(--accent-primary); border: 1px solid var(--border-color);">${post.tag}</span>
                 <h3 class="card-title">${post.title}</h3>
                 <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim);">${post.date}</span>
@@ -730,3 +743,122 @@ function initAttackMap() {
         
     }, 2000); // Trigger an attack every 2 seconds
 }
+
+// 5. Secret Generator
+function initSecretGenerator() {
+    const modal = document.getElementById('secret-generator-modal');
+    if(!modal) return;
+    
+    const closeBtn = document.getElementById('gen-close-btn');
+    if(closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    const genBtn = document.getElementById('gen-btn');
+    const copyBtn = document.getElementById('gen-copy-btn');
+    const output = document.getElementById('gen-output');
+
+    if(genBtn) {
+        genBtn.addEventListener('click', () => {
+            const title = document.getElementById('gen-title').value;
+            const tag = document.getElementById('gen-tag').value;
+            const cat = document.getElementById('gen-cat').value;
+            const desc = document.getElementById('gen-desc').value;
+            const content = document.getElementById('gen-content').value;
+
+            let nextId = 1;
+            if (typeof portfolioData !== 'undefined' && portfolioData.writeups && portfolioData.writeups.length > 0) {
+                nextId = Math.max(...portfolioData.writeups.map(w => w.id || 0)) + 1;
+            }
+
+            let formattedContent = content;
+            if (!content.includes('<') && !content.includes('>') && content.trim() !== '') {
+                formattedContent = content.replace(/\n\n/g, '</p><p style="margin-top: 1rem;">').replace(/\n/g, '<br>');
+                formattedContent = `<p>${formattedContent}</p>`;
+            }
+
+            // 1. Generate text for Copy-Paste
+            const template = `        {
+            id: ${nextId},
+            title: "${title.replace(/"/g, '\\"')}",
+            date: "Recent",
+            tag: "${tag.replace(/"/g, '\\"')}",
+            category: "${cat.replace(/"/g, '\\"')}",
+            snippet: "${desc.replace(/"/g, '\\"')}",
+            content: \\\`
+${formattedContent}\\\`
+        },`;
+
+            output.value = template;
+            output.classList.remove('hidden');
+            output.style.display = 'block';
+            
+            copyBtn.classList.remove('hidden');
+            copyBtn.style.display = 'inline-block';
+            
+            // 2. LIVE PREVIEW: push to standard array and re-render the ui instantly
+            if (typeof portfolioData !== 'undefined' && portfolioData.writeups) {
+                portfolioData.writeups.push({
+                    id: nextId,
+                    title: title,
+                    date: "Recent",
+                    tag: tag,
+                    category: cat,
+                    snippet: desc,
+                    content: formattedContent
+                });
+                
+                // Switch view to writeups automatically to show the preview
+                document.querySelectorAll('.view-section').forEach(sec => {
+                    sec.classList.remove('active-section');
+                    sec.classList.add('hidden');
+                });
+                const writeupSec = document.getElementById('writeups');
+                if(writeupSec) {
+                    writeupSec.classList.remove('hidden');
+                    writeupSec.classList.add('active-section');
+                }
+                
+                // Update nav active state
+                document.querySelectorAll('.nav-btn').forEach(l => l.classList.remove('active'));
+                const targetLink = document.querySelector('.nav-btn[data-target="writeups"]')
+                if(targetLink) targetLink.classList.add('active');
+                
+                // Trigger re-render to view it
+                if (typeof renderWriteups === 'function') {
+                    renderWriteups();
+                }
+                
+                // Optionally auto-close the generator
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    if(copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            output.select();
+            document.execCommand('copy');
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiat!';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        });
+    }
+}
+
+// 6. Delete Admin Logic
+window.deleteWriteup = function(event, id) {
+    if(event) { event.preventDefault(); event.stopPropagation(); }
+    if(confirm("Ești sigur că vrei să ștergi acest write-up din vizualizarea live?")) {
+        portfolioData.writeups = portfolioData.writeups.filter(w => w.id !== id);
+        
+        // render with currently active category
+        const activeCatBtn = document.querySelector('#writeups-categories .filter-btn.active');
+        const cat = activeCatBtn ? activeCatBtn.getAttribute('data-filter') : "Toate";
+        renderWriteups(cat);
+    }
+};
